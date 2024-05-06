@@ -6,66 +6,60 @@ import InputOptions from './InputOptions';
 import {Subscriptions,CalendarViewDay,EventNote} from "@mui/icons-material";
 import Post from './Post';
 import { db } from "./firebase";
-import firebase from 'firebase/compat/app';
-import { collection, addDoc, getDocs } from "firebase/firestore";
+
+import { collection, getDocs, setDoc, doc,serverTimestamp,query} from "firebase/firestore";
+import { useSelector } from 'react-redux';
+import { selectUser } from './features/userSlice';
+import FlipMove from "react-flip-move";
 
 
 function Feed() {
+  const user = useSelector(selectUser);
     const [input,setinput] = useState('');
     const [posts,setPosts] = useState([]);
-     
-    // useEffect(()  => {
-    //  db.collection("post").onSnapshot(snapshot =>{
-    //     setPosts(snapshot.docs.map(doc => (
-    //         {
-    //             id:doc.id,
-    //             data:doc.data(),
-    //         }
-    //     )))
-    //  });
-    // },[]);
+    // const [postReverse,setPostReverse] = useState([]);
+    const addPost = async (e) => {
+        e.preventDefault();
+        await setDoc(doc(db, "post", posts.length.toString()), {
+          id:posts.length.toString(),
+          name: user.displayName,
+          description: user.email,
+          message: input,
+          photoURl:user.photoURL || "",
+          timestamp:serverTimestamp(),
+        });
+        fetchPost()
+    } 
 
-    // useEffect(() => {
-    //   console.log(posts,"avinash");
-    // },[posts]);
-
-
-    // const sendPost = (e) => {
-    //     e.preventDefault();
-
-    //    db.collection('post').add({
-    //     name:'Avinash Kumar',
-    //     description:"hey there",
-    //     message: input,
-    //     photoUrl: "",
-    //     //time according to location...we are using the server timestamp
-    //     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-
-    //    });
-
-        
-    // };
-    // Demo
-
+    // collection(db, "post")
     const fetchPost = async () => {
        
-      await getDocs(collection(db, "post"))
+      await getDocs(query(collection(db, "post")))
           .then((querySnapshot)=>{               
               const newData = querySnapshot.docs
-                  .map((doc) => ({...doc.data(), id:doc.id }));
-              setPosts(newData);                
-              // console.log(todos, newData);
-          })
+                  .map((doc) => ({...doc.data(), id:doc.id, }));
+                  var array = [];
+                  array =newData.reverse();
+                  
+              setPosts(array);               
+          });
      
   }
-  //demo2
+
   useEffect(()=>{
     fetchPost()
-  },[])
-    useEffect(()=>{
-      console.log(posts)
-    },[posts])
+  },[]);
 
+ 
+  // useEffect(()=>{
+  //   console.log("post", posts)
+  //   var array = [];
+  //   array = posts;
+
+  // },[posts])
+
+
+  
   return (
     <div className="feed">
         <div className="feed_inputContainer">
@@ -73,7 +67,7 @@ function Feed() {
                 <CreateIcon  />
                 <form>
                     <input value={input} onChange={e => setinput(e.target.value)} type="text" />
-                    {/* <button onClick={sendPost} type='submit'>Send</button>  */}
+                    <button onClick={addPost} type='submit'>Send</button> 
                 </form>
             </div>
            <div className="feed_inputOptions">
@@ -84,14 +78,16 @@ function Feed() {
            </div>
         </div>
       {/* Posts */}
-      {posts.map(({id,data:{name,description,message,photoUrl}}) => (
+      <FlipMove>
+      { posts.length>0 && posts.map((post, i) => (
         <Post 
-        key={id}
-        name={name}
-        description={description}
-        message={message}
-        photoUrl={photoUrl}/>
+        key={i}
+        description={post.description}
+        name={post.name}
+        message={post.message}
+        photoURL={post.photoURL}/>
       ))}
+      </FlipMove>
 
       
     </div>

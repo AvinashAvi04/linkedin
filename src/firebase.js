@@ -40,20 +40,25 @@
 // export { db, auth };
 
 import { initializeApp } from 'firebase/app';
+// import 'firebase/compat/auth';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getAuth } from "firebase/auth"
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBOK7x5N5UnjY4TDqndzH7l5tvdNIsWFRc",
-    authDomain: "todo-app-e3cf0.firebaseapp.com",
-    projectId: "todo-app-e3cf0",
-    storageBucket: "todo-app-e3cf0.appspot.com",
-    messagingSenderId: "940016886081",
-    appId: "1:940016886081:web:91686613f16b1b1f8001c0",
-  };
-  
+  apiKey: "AIzaSyB-hnwQrpUGAZUKbJkWOUzN3B7Lffsg5_M",
+  authDomain: "linkedin-clone10-5596d.firebaseapp.com",
+  databaseURL: "https://linkedin-clone10-5596d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "linkedin-clone10-5596d",
+  storageBucket: "linkedin-clone10-5596d.appspot.com",
+  messagingSenderId: "860720092949",
+  appId: "1:860720092949:web:7a1e7a140966710a353b1c"
+};
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
+export const auth = getAuth(app);

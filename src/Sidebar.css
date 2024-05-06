@@ -8,6 +8,7 @@
 }
 .sidebar_avatar{
     margin-bottom: 10px;
+    background-color: blue;
 }
 .sidebar_top > h4{
     color: gray;
